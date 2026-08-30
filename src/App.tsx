@@ -1,10 +1,8 @@
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./App.css";
+import MainPage from "./pages/MainPage";
 
-gsap.registerPlugin(ScrollTrigger);
 function App() {
-  return <div></div>;
+  return <MainPage />;
 }
 
 export default App;
