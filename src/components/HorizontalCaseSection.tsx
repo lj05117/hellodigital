@@ -14,48 +14,34 @@ export function HorizontalCaseSection({ items }: HorizontalCaseSectionProps) {
   const trackRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
-    if (!sectionRef.current || !trackRef.current) return;
+    const section = sectionRef.current;
+    const track = trackRef.current;
+
+    if (!section || !track) return;
 
     const ctx = gsap.context(() => {
-      const wrap = sectionRef.current?.querySelector(
-        ".horizontal-track-wrap",
-      ) as HTMLElement | null;
-      const track = trackRef.current;
+      const wrap = section.querySelector(".horizontal-track-wrap") as HTMLElement | null;
 
-      if (!wrap || !track) return;
+      if (!wrap) return;
 
-      const maxDistance = Math.max(track.scrollWidth - wrap.clientWidth, 0);
-      const startPoint = "center center";
-      const endPoint = "bottom bottom";
+      const getDistance = () => Math.max(track.scrollWidth - wrap.clientWidth, 0);
 
       gsap.set(track, { x: 0 });
 
       gsap.to(track, {
-        x: -maxDistance,
+        x: () => -getDistance(),
         ease: "none",
         scrollTrigger: {
-          trigger: sectionRef.current,
-          start: startPoint,
-          end: "+=1800",
+          trigger: section,
+          start: "center center",
+          end: () => `+=${getDistance()}`,
           scrub: 1.4,
           pin: true,
           invalidateOnRefresh: true,
           anticipatePin: 1,
         },
       });
-
-      gsap.utils.toArray<HTMLElement>(".photo-card").forEach((card) => {
-        gsap.to(card, {
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: startPoint,
-            end: endPoint,
-            scrub: true,
-          },
-        });
-      });
-    }, sectionRef);
+    }, section);
 
     return () => ctx.revert();
   }, [items]);
