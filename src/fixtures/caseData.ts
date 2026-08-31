@@ -21,17 +21,6 @@ export const caseItems: CaseItem[] = [
         title: "진료 대시보드",
         accent: "linear-gradient(135deg, #68d5c6 0%, #baf5ea 100%)",
       },
-      {
-        id: 202,
-        title: "실시간 모니터링",
-        accent: "linear-gradient(135deg, #1db9a7 0%, #82f5d2 100%)",
-      },
-      {
-        id: 203,
-        title: "환자 리포트",
-        accent: "linear-gradient(135deg, #0ea5a5 0%, #9ce5d5 100%)",
-      },
-      { id: 204, title: "운영 분석", accent: "linear-gradient(135deg, #2dd4bf 0%, #c4fff1 100%)" },
     ],
   },
   {

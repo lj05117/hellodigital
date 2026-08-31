@@ -12,7 +12,6 @@ type HorizontalCaseSectionProps = {
 export function HorizontalCaseSection({ items }: HorizontalCaseSectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
-
   useLayoutEffect(() => {
     const section = sectionRef.current;
     const track = trackRef.current;
@@ -32,16 +31,10 @@ export function HorizontalCaseSection({ items }: HorizontalCaseSectionProps) {
        * --------------------------------------------------
        */
 
-      /**
-       * 전체 story-track이 이동해야 하는 최대 거리
-       */
       const getOuterDistance = () => {
         return Math.max(track.scrollWidth - wrap.clientWidth, 0);
       };
 
-      /**
-       * 특정 story-item의 내부 photo-track 이동 거리
-       */
       const getInnerDistance = (storyItem: HTMLElement) => {
         const photoZone = storyItem.querySelector(".story-photo-zone") as HTMLElement | null;
 
@@ -54,13 +47,6 @@ export function HorizontalCaseSection({ items }: HorizontalCaseSectionProps) {
         return Math.max(photoTrack.scrollWidth - photoZone.clientWidth, 0);
       };
 
-      /**
-       * story-item의 left edge가
-       * horizontal-track-wrap의 left edge에
-       * 정확하게 맞도록 만드는 x값
-       *
-       * story-track은 translateX(-offsetLeft)만큼 이동한다.
-       */
       const getItemX = (storyItem: HTMLElement) => {
         return -storyItem.offsetLeft;
       };
@@ -89,16 +75,6 @@ export function HorizontalCaseSection({ items }: HorizontalCaseSectionProps) {
        * --------------------------------------------------
        * Master Timeline
        * --------------------------------------------------
-       *
-       * 각 story-item마다:
-       *
-       * 1. story-track 이동
-       * 2. story-item left가 viewport left에 도착
-       * 3. story-track 정지
-       * 4. photo-track 내부 이동
-       * 5. 내부 이동 종료
-       * 6. story-track 다시 이동
-       *
        */
 
       const timeline = gsap.timeline({
@@ -109,21 +85,12 @@ export function HorizontalCaseSection({ items }: HorizontalCaseSectionProps) {
 
       storyItems.forEach((storyItem, index) => {
         /**
-         * ----------------------------------------------
-         * 1. 다음 story-item까지 바깥 이동
-         * ----------------------------------------------
-         *
-         * 첫 번째 item은 이미 viewport에 있으므로
-         * 외부 이동이 필요 없다.
+         * 다음 story-item까지 외부 이동
          */
         if (index > 0) {
           timeline.to(track, {
             x: () => getItemX(storyItem),
 
-            /*
-             * duration은 실제 이동량에 비례해서 설정한다.
-             * 너무 빠르거나 느려지는 것을 방지한다.
-             */
             duration: () => {
               const currentX = Number(gsap.getProperty(track, "x")) || 0;
 
@@ -135,83 +102,116 @@ export function HorizontalCaseSection({ items }: HorizontalCaseSectionProps) {
         }
 
         /**
-         * ----------------------------------------------
-         * 2. 내부 photo-track 이동
-         * ----------------------------------------------
-         *
-         * 이 구간에서는 track의 x를 변경하지 않는다.
-         *
-         * 따라서 story-item 전체가 움직이지 않고
-         * story-header도 화면에서 그대로 유지된다.
+         * 현재 story-item 내부 이동
          */
         const photoTrack = storyItem.querySelector(".photo-track") as HTMLElement | null;
 
         if (!photoTrack) return;
 
         timeline.to(photoTrack, {
-          x: () => {
-            return -getInnerDistance(storyItem);
-          },
+          x: () => -getInnerDistance(storyItem),
 
-          /*
-           * 내부 이동 속도
-           */
-          duration: () => {
-            return Math.max(getInnerDistance(storyItem) / 1000, 0.5);
-          },
+          duration: () => Math.max(getInnerDistance(storyItem) / 1000, 0.5),
         });
       });
 
       /**
-       * ----------------------------------------------
-       * 3. 마지막 story-item 이후
-       *    전체 track 끝까지 이동
-       * ----------------------------------------------
+       * 마지막 story-item 이후
+       * 전체 track 끝까지 이동
        */
       timeline.to(track, {
         x: () => -getOuterDistance(),
 
-        duration: () => {
-          return Math.max(getOuterDistance() / 1000, 0.5);
-        },
+        duration: () => Math.max(getOuterDistance() / 1000, 0.5),
       });
 
       /**
-       * ----------------------------------------------
-       * ScrollTrigger
-       * ----------------------------------------------
+       * --------------------------------------------------
+       * Responsive ScrollTrigger
+       * --------------------------------------------------
        *
-       * timeline 전체를 세로 스크롤과 연결한다.
+       * 1025px 이상:
+       * 기존 GSAP pin + horizontal interaction
+       *
+       * 1024px 이하:
+       * 이 컴포넌트에서는 pin을 하지 않는다.
+       *
+       * 부모(spin-spacer)의 움직임을
+       * 그대로 받을 수 있도록 한다.
        */
-      ScrollTrigger.create({
-        animation: timeline,
+      const mm = gsap.matchMedia();
 
-        trigger: section,
-
-        start: "center center",
-
-        /*
-         * timeline의 각 구간을 충분히 사용할 수 있도록
-         * 전체 가로 이동 + 내부 이동량을 기준으로 한다.
-         */
-        end: () => {
-          const outerDistance = getOuterDistance();
-
-          const innerDistance = storyItems.reduce((total, storyItem) => {
-            return total + getInnerDistance(storyItem);
-          }, 0);
-
-          return `+=${Math.max(outerDistance + innerDistance, 1)}`;
+      mm.add(
+        {
+          desktop: "(min-width: 1025px)",
+          mobile: "(max-width: 1024px)",
         },
+        (context) => {
+          const { desktop } = context.conditions;
 
-        scrub: 1.4,
+          if (desktop) {
+            ScrollTrigger.create({
+              animation: timeline,
 
-        pin: true,
+              trigger: section,
 
-        anticipatePin: 1,
+              start: "center center",
 
-        invalidateOnRefresh: true,
-      });
+              end: () => {
+                const outerDistance = getOuterDistance();
+
+                const innerDistance = storyItems.reduce((total, storyItem) => {
+                  return total + getInnerDistance(storyItem);
+                }, 0);
+
+                return `+=${Math.max(outerDistance + innerDistance, 1)}`;
+              },
+
+              scrub: 1.4,
+
+              /*
+               * 1025px 이상에서만 pin
+               */
+              pin: true,
+
+              anticipatePin: 1,
+
+              invalidateOnRefresh: true,
+            });
+          }
+
+          /**
+           * ----------------------------------------------
+           * Mobile / Tablet
+           * ----------------------------------------------
+           *
+           * 1024px 이하에서는
+           *
+           * - ScrollTrigger 없음
+           * - pin 없음
+           * - 부모의 움직임에 맡김
+           */
+          if (!desktop) {
+            gsap.set(track, {
+              clearProps: "transform",
+            });
+
+            storyItems.forEach((storyItem) => {
+              const photoTrack = storyItem.querySelector(".photo-track") as HTMLElement | null;
+
+              if (photoTrack) {
+                gsap.set(photoTrack, {
+                  clearProps: "transform",
+                });
+              }
+            });
+          }
+
+          return () => {
+            timeline.pause();
+          };
+        },
+      );
     }, section);
 
     return () => {
