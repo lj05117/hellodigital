@@ -65,28 +65,27 @@ export function HorizontalCaseSection({ items }: HorizontalCaseSectionProps) {
       <div className="content-area">
         <div className="horizontal-track-wrap">
           <div ref={trackRef} className="story-track">
-            <div className="section-header">
-              {items.map((item) => (
-                <div key={item.id} className="story-item">
-                  <div className="story-header">
-                    <h2>{item.category}</h2>
-                    <div>{item.description}</div>
-                  </div>
-                  <div className="story-photo-zone">
-                    {item.photos.map((photo) => (
-                      <div key={photo.id} className="photo-card">
-                        <div className="photo-thumb" style={{ background: photo.accent }}></div>
-
-                        <div className="photo-caption">
-                          <div className="story-category">{item.category}</div>
-                          <div>{photo.title}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+            {items.map((item) => (
+              <div key={item.id} className="story-item">
+                <div className="story-header">
+                  <h2>{item.category}</h2>
+                  <div>{item.description}</div>
                 </div>
-              ))}
-            </div>
+
+                <div className="story-photo-zone">
+                  {item.photos.map((photo) => (
+                    <div key={photo.id} className="photo-card">
+                      <div className="photo-thumb" style={{ background: photo.accent }}></div>
+
+                      <div className="photo-caption">
+                        <div className="story-category">{item.category}</div>
+                        <div>{photo.title}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
