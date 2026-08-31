@@ -147,7 +147,7 @@ export function HorizontalCaseSection({ items }: HorizontalCaseSectionProps) {
           mobile: "(max-width: 1024px)",
         },
         (context) => {
-          const { desktop } = context.conditions;
+          const { desktop } = (context.conditions || {}) as Record<"desktop" | "mobile", boolean>;
 
           if (desktop) {
             ScrollTrigger.create({
