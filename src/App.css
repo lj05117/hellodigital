@@ -17,7 +17,7 @@
 }
 
 .empty-block {
-  min-height: clamp(340px, 42vh, 620px);
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,7 +27,7 @@
   margin: 0 0 14px;
   font-size: clamp(2rem, 4vw, 3.25rem);
   line-height: 1.08;
-  letter-spacing: -0.06em;
+  letter-spacing: 0;
   color: #0f172a;
 }
 
@@ -51,8 +51,7 @@
   flex-direction: row;
   align-items: stretch;
   gap: 26px;
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
   padding-inline: 20px;
   box-sizing: border-box;
 }
@@ -104,7 +103,6 @@
   z-index: 0;
 }
 
-.story-header,
 .story-photo-zone {
   position: relative;
   z-index: 1;
@@ -123,11 +121,30 @@
 .story-photo-zone {
   display: flex;
   flex-wrap: nowrap;
+  align-items: flex-start;
   gap: 16px;
-  width: fit-content;
-  max-width: none;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.7) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.story-photo-zone::-webkit-scrollbar {
+  height: 8px;
+}
+
+.story-photo-zone::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.7);
+  border-radius: 999px;
+}
+
+.story-photo-zone::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .photo-card {

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { CaseItem } from "../types/caseData";
@@ -12,6 +12,55 @@ type HorizontalCaseSectionProps = {
 export function HorizontalCaseSection({ items }: HorizontalCaseSectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (!sectionRef.current || !trackRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const wrap = sectionRef.current?.querySelector(
+        ".horizontal-track-wrap",
+      ) as HTMLElement | null;
+      const track = trackRef.current;
+
+      if (!wrap || !track) return;
+
+      const maxDistance = Math.max(track.scrollWidth - wrap.clientWidth, 0);
+      const isDesktop = window.innerWidth > 1024;
+      const startPoint = isDesktop ? "top top" : "center center";
+      const endPoint = isDesktop ? "bottom bottom" : "bottom center";
+
+      gsap.set(track, { x: 0 });
+
+      gsap.to(track, {
+        x: -maxDistance,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: startPoint,
+          end: endPoint,
+          scrub: 1.2,
+          pin: true,
+          invalidateOnRefresh: true,
+          anticipatePin: 1,
+        },
+      });
+
+      gsap.utils.toArray<HTMLElement>(".photo-card").forEach((card) => {
+        gsap.to(card, {
+          y: -8,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: startPoint,
+            end: endPoint,
+            scrub: true,
+          },
+        });
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [items]);
 
   return (
     <section ref={sectionRef} className="horizontal-section" aria-label="Horizontal story section">
