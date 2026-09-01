@@ -9,39 +9,37 @@
   width: 100%;
 }
 
-.content-area {
-  width: min(1400px, 100%);
-  margin: 0 auto;
+.content-padding {
+  width: 100%;
   padding-inline: 20px;
   box-sizing: border-box;
 }
 
+.content-area {
+  width: 100%;
+  max-width: 1400px;
+  margin-inline: auto;
+}
+
 .empty-block {
   min-height: 100vh;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(238, 242, 255, 0.9));
 }
 
 .horizontal-section {
   position: relative;
-
   min-height: 100vh;
-
   display: flex;
   align-items: center;
-
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(238, 242, 255, 0.9));
 }
 
 .horizontal-section .content-area {
   position: relative;
-
   width: 100%;
-
   padding-top: 20px;
   padding-bottom: 20px;
   padding-inline: 0;
@@ -49,179 +47,110 @@
 
 .horizontal-track-wrap {
   position: relative;
-
   width: 100%;
-
   overflow: hidden;
-
-  padding-top: 32px;
-  padding-bottom: 20px;
 }
 
 .story-track {
   display: flex;
   align-items: stretch;
-
-  gap: 26px;
-
+  gap: 20px;
   width: max-content;
-
-  padding-inline: 20px 40px;
-
   box-sizing: border-box;
-
   will-change: transform;
 }
 
 .story-item {
   position: relative;
-
   display: flex;
   flex-direction: column;
-
   gap: 22px;
-
   width: 100vw;
-
-  padding: 22px 22px 24px;
-
+  padding: 20px;
   border-radius: 28px;
-
   border: 1px solid rgba(148, 163, 184, 0.22);
-
   background: rgba(255, 255, 255, 0.78);
-
   box-shadow: 0 22px 50px rgba(15, 23, 42, 0.08);
-
   flex-shrink: 0;
-
   overflow: hidden;
 }
 
 .story-item::before {
   content: "";
-
   position: absolute;
   inset: 0;
-
   border-radius: inherit;
-
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.32));
-
   z-index: 0;
-
   pointer-events: none;
 }
 
-/*
- * Header
- *
- * story-item 내부에 있기 때문에
- * story-track이 움직일 때는 같이 이동한다.
- *
- * 하지만 story-track이 특정 item 위치에서
- * 정지하는 내부 이동 구간에서는
- * header도 그대로 화면에 유지된다.
- */
 .story-header {
   position: sticky;
   top: 0;
   z-index: 2;
-
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 8px;
-
   flex-shrink: 0;
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(8px);
 }
 
+.story-description {
+  display: flex;
+  align-items: center;
+}
+
 .story-category {
   display: inline-block;
-
   margin-bottom: 8px;
-
   color: #64748b;
-
   font-size: 0.72rem;
-
   font-weight: 700;
-
   letter-spacing: 0.08em;
-
   text-transform: uppercase;
 }
 
-/*
- * ========================================
- * Inner horizontal viewport
- * ========================================
- */
 .story-photo-zone {
   position: relative;
-
   z-index: 1;
-
   width: 100%;
-
   min-width: 0;
-
   max-width: 100%;
-
   overflow: hidden;
 }
 
-/*
- * 실제로 움직이는 내부 track
- */
 .photo-track {
   display: flex;
-
   flex-wrap: nowrap;
-
   align-items: flex-start;
-
   gap: 16px;
-
   width: max-content;
-
   will-change: transform;
 }
 
-/*
- * Photo card
- */
 .photo-card {
   display: inline-flex;
-
   flex: 0 0 auto;
-
   flex-direction: column;
-
   gap: 10px;
 }
 
 .photo-thumb {
   position: relative;
-
   width: 1000px;
-
   height: 180px;
-
   border-radius: 20px;
-
   overflow: hidden;
-
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.38);
 }
 
-/*
- * ========================================
- * Tablet / Mobile
- * ========================================
- */
 @media (max-width: 1024px) {
+  .content-padding {
+    padding-inline: 10px;
+  }
+
   .content-area {
     padding-inline: 10px;
   }
@@ -230,71 +159,29 @@
     min-height: 40vh;
   }
 
-  /*
-   * ========================================
-   * Horizontal Section
-   * ========================================
-   *
-   * 1024px 이하에서는
-   * GSAP pin / vertical → horizontal 변환을
-   * 사용하지 않는다.
-   *
-   * 페이지의 세로 스크롤은 그대로 유지하고,
-   * 이 영역만 사용자가 직접 가로 스크롤한다.
-   */
   .horizontal-section {
     position: relative;
-
     width: 100%;
     min-height: auto;
-
     display: block;
   }
 
   .horizontal-section .content-area {
     position: relative;
-
     width: 100%;
     min-height: auto;
-
     padding-top: 0;
     padding-inline: 10px;
   }
 
-  /*
-   * ========================================
-   * Outer Horizontal Scroll
-   * ========================================
-   *
-   * 사용자가 직접 story-item을
-   * 좌우로 스와이프한다.
-   */
   .horizontal-track-wrap {
     position: relative;
-
     width: 100%;
-
     overflow-x: auto;
     overflow-y: hidden;
-
-    padding-top: 32px;
-    padding-bottom: 20px;
-
-    /*
-     * iOS / Android 터치 스크롤
-     */
     -webkit-overflow-scrolling: touch;
-
-    /*
-     * 가로 스크롤 동작을 명확하게 한다.
-     */
     touch-action: pan-x;
-
-    /*
-     * 스크롤바 숨김
-     */
     scrollbar-width: none;
-
     -ms-overflow-style: none;
   }
 
@@ -302,134 +189,54 @@
     display: none;
   }
 
-  /*
-   * ========================================
-   * Outer Track
-   * ========================================
-   */
   .story-track {
     display: flex;
-
     align-items: stretch;
-
     gap: 26px;
-
-    /*
-     * 콘텐츠 전체가 가로로 이어져야 한다.
-     */
     width: max-content;
-
-    padding-inline: 20px 40px;
-
     box-sizing: border-box;
-
-    /*
-     * 1024px 이하에서는 GSAP transform을
-     * 사용하지 않는다.
-     */
     transform: none !important;
-
     will-change: auto;
   }
 
-  /*
-   * ========================================
-   * Story Item
-   * ========================================
-   *
-   * 1025px 이상과 동일하게 넓게 유지.
-   *
-   * 82vw / 380px 제한을 제거한다.
-   */
   .story-item {
     position: relative;
-
     display: flex;
     flex-direction: column;
-
     gap: 22px;
-
-    /*
-     * 핵심
-     *
-     * 모바일에서도 작은 카드로 축소하지 않고
-     * viewport 한 화면 정도의 너비를 유지한다.
-     */
     width: 100vw;
     min-width: 100vw;
-
     max-width: none;
-
     min-height: 420px;
-
-    padding: 22px 22px 24px;
-
     box-sizing: border-box;
-
     border-radius: 28px;
-
     border: 1px solid rgba(148, 163, 184, 0.22);
-
     background: rgba(255, 255, 255, 0.78);
-
     box-shadow: 0 22px 50px rgba(15, 23, 42, 0.08);
-
     flex-shrink: 0;
-
     overflow: hidden;
   }
 
-  /*
-   * ========================================
-   * Story Header
-   * ========================================
-   */
   .story-header {
     position: relative;
-
     z-index: 2;
-
     display: flex;
     flex-direction: column;
-
     gap: 8px;
-
     width: 100%;
-
     flex-shrink: 0;
   }
 
-  /*
-   * ========================================
-   * Inner Horizontal Scroll
-   * ========================================
-   *
-   * photo-zone도 native scroll.
-   *
-   * 바깥 스크롤과 별개로
-   * 내부 사진을 직접 좌우로 움직인다.
-   */
   .story-photo-zone {
     position: relative;
-
     z-index: 1;
-
     width: 100%;
-
     min-width: 0;
     max-width: 100%;
-
     overflow-x: auto;
     overflow-y: hidden;
-
-    /*
-     * 터치 디바이스에서
-     * 가로 스크롤을 우선한다.
-     */
     touch-action: pan-x;
-
     -webkit-overflow-scrolling: touch;
-
     scrollbar-width: thin;
   }
 
@@ -437,59 +244,29 @@
     height: 6px;
   }
 
-  /*
-   * ========================================
-   * Inner Track
-   * ========================================
-   */
   .photo-track {
     display: flex;
-
     flex-wrap: nowrap;
-
     align-items: flex-start;
-
     gap: 16px;
-
     width: max-content;
-
-    /*
-     * 1024 이하에서는 GSAP transform 사용 안 함
-     */
     transform: none !important;
-
     will-change: auto;
   }
 
-  /*
-   * ========================================
-   * Photo Card
-   * ========================================
-   */
   .photo-card {
     display: inline-flex;
-
     flex: 0 0 auto;
-
     flex-direction: column;
-
     gap: 10px;
   }
 
   .photo-thumb {
     position: relative;
-
-    /*
-     * 1025px 이상과 동일한 크기
-     */
     width: 1000px;
-
     height: 180px;
-
     border-radius: 20px;
-
     overflow: hidden;
-
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.38);
   }
 }
