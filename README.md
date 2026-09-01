@@ -384,7 +384,7 @@ Node.js 환경에서 프로젝트를 실행합니다.
 
 ```bash
 npm install
-npm run dev -- --host
+npm run dev
 ```
 
 프로덕션 빌드는 다음 명령으로 확인할 수 있습니다.
